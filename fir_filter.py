@@ -15,16 +15,15 @@ class fir(object):
 		else:
 			self._data.append(sample)
 		self.index= (self.index + 1) % self.size
-		
-		acc = 0		# accumulator
+		acc = 0	# accumulator
 		indx = self.index
-		
+
 		for j in range (self.size):
-			acc = acc + self._data[indx] * h[j]
-			if indx == 9:
+			acc = acc + self._data[indx] * self.h[j]
+			if indx == ((self.size)-1):
 				indx = 0
 			else:
 				indx += 1
 
 		return (acc ) # result to 16 bit value
-	
+
