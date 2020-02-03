@@ -9,7 +9,7 @@ class comparator(object):
 
 	def proc(self, sample):
 		"""comparing"""
-		if sample >= self.thres_max:
+		if sample >= self.thres_max :
 			return 1
 		if sample <= self.thres_min:
 			return 0
