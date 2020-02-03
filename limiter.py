@@ -9,7 +9,9 @@ class limiter(object):
 
 	def proc(self, sample):
 		"""limiting"""
-		if sample >= self.thres_max:
-			return self.out_max
-		if sample <= self.thres_min:
+		if sample < self.out_min:
 			return self.out_min
+		elif self.out_min <= sample <= self.out_max:
+			return sample
+		else: 
+			return self.out_max
