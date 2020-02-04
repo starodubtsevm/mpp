@@ -9,6 +9,7 @@ from comparator import *
 from limiter import *
 from pll import *
 from white_noise_gen import *
+#from test_local_gen import*
 from const import *
 
 #--------------------------------------
@@ -31,6 +32,7 @@ fsk_det_buf       =  []
 fsk_det_flt_buf   =  []
 comp_buf          =  []
 pll_edge_buf      =  []
+pll_local_gen_buf =  []
 
 #tic = time()
 for i in range(sim_point):
@@ -60,6 +62,9 @@ for i in range(sim_point):
 	
 	temp6 = pll1.edge(temp5)	# signal after eage finder
 	pll_edge_buf.append(temp6)
+	
+	temp7 = pll1.local_gen()
+	pll_local_gen_buf.append(temp7)
 
 #rms_sig = np.sqrt(np.mean(np.square(signal_buf)))
 #print ("RMS signal "+ str(rms_sig))
@@ -93,8 +98,8 @@ axs[1,1].plot(t, comp_buf)
 axs[1,1].set_ylim(-1, 2)
 axs[1,1].set_xlabel('Edge output')
 
-#axs[2,1].plot(t, noise_buf)
-#axs[2,1].set_xlabel('Noise output')
+axs[2,1].plot(t, pll_local_gen_buf)
+axs[2,1].set_xlabel('Pll Local gen output')
 
 plt.show()
 
