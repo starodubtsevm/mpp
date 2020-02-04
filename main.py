@@ -61,11 +61,14 @@ for i in range(sim_point):
 	temp6 = pll1.edge(temp5)	# signal after eage finder
 	pll_edge_buf.append(temp6)
 
-print('RMS noise value ' + str(np.sqrt(np.mean(noise_buf)**2)))	# RMS noise value
+#rms_sig = np.sqrt(np.mean(np.square(signal_buf)))
+#print ("RMS signal "+ str(rms_sig))
 
-print('RMS signal value '+ str(np.sqrt(np.mean(signal_buf)**2)))	# RMS signal value
+#rms_noise = np.sqrt(np.mean(np.square(noise_buf)))
+#print ("RMS noise "+ str(rms_noise))
 
-
+#rms_noise_filt = np.sqrt(np.mean(np.square(filter_buf)))
+#print ("RMS noise after channel filer "+ str(rms_noise_filt))
 
 #toc = time()
 #print(toc - tic)
@@ -73,25 +76,24 @@ print('RMS signal value '+ str(np.sqrt(np.mean(signal_buf)**2)))	# RMS signal va
 fig, axs = plt.subplots(3, 2, sharex = True)
 fig.subplots_adjust(hspace=0.1)
 
-axs[0,0].plot(t, limiter_buf)
-axs[0,0].set_xlabel('Limmiter output')
+axs[0,0].plot(t, signal_buf)
+axs[0,0].set_xlabel('Input signal')
 
-axs[1,0].plot(t, fsk_det_flt_buf)
-axs[1,0].set_xlabel('FSK detector output (after the filter)')
+axs[1,0].plot(t, noise_buf)
+axs[1,0].set_xlabel('Noise')
 
-axs[2,0].plot(t, comp_buf)
-axs[2,0].set_ylim(-1, 2)
-axs[2,0].set_xlabel('Comparator output')
+axs[2,0].plot(t, filter_buf)
+axs[2,0].set_xlabel('After channel filter output')
 
-#axs[0,1].plot(t, res4)
-#axs[0,1].set_xlabel('Edge output')
+axs[0,1].plot(t, fsk_det_flt_buf)
+axs[0,1].set_xlabel('After fsk det and filter output')
 
 axs[1,1].plot(t, pll_edge_buf)
 axs[1,1].set_ylim(-1, 2)
 axs[1,1].set_xlabel('Edge output')
 
-axs[2,1].plot(t, noise_buf)
-axs[2,1].set_xlabel('Noise output')
+#axs[2,1].plot(t, noise_buf)
+#axs[2,1].set_xlabel('Noise output')
 
 plt.show()
 
