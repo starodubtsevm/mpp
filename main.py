@@ -89,6 +89,7 @@ axs[0,1].plot(t, fsk_det_flt_buf)
 axs[0,1].set_xlabel('After fsk det and filter output')
 
 axs[1,1].plot(t, pll_edge_buf)
+axs[1,1].plot(t, comp_buf)
 axs[1,1].set_ylim(-1, 2)
 axs[1,1].set_xlabel('Edge output')
 
