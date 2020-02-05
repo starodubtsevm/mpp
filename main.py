@@ -7,22 +7,21 @@ from fsk_gen2 import *
 from fsk_delay_det import *
 from comparator import *
 from limiter import *
-from pll import *
+from pll2 import *
 from white_noise_gen import *
-#from test_local_gen import*
 from const import *
 
 #--------------------------------------
 # main
 #--------------------------------------
-noise1 = white_noise(560)
+noise1 = white_noise(360)
 fsk1 = fsk_gen(525,360,0x2c)	# source fsk signal
 limiter_in = limiter (-2000,2000)	# input limiter
 chan_fir = fir(h_bpf_525)	#.channel filter
 det = fsk_det(33)		# fsk detector @ 525Hz
 det_fir = fir(h_lpf_20)		#.fsk detector filter
-comp_det = comparator(250,-250, 1)	# comparator after fsk detector filter
-pll1 = pll(1)
+comp_det = comparator(350,-350, 1)	# comparator after fsk detector filter
+sem_pll = pll2(1)
 
 noise_buf         =  []
 signal_buf        =  []
@@ -33,8 +32,10 @@ fsk_det_flt_buf   =  []
 comp_buf          =  []
 pll_edge_buf      =  []
 pll_local_gen_buf =  []
+pll_phase_det_buf =  []
+sem_pll_buf       =  []
+sem_pll_err_buf   =  []
 
-#tic = time()
 for i in range(sim_point):
 
 	temp00 = noise1.proc(i)		# noise
@@ -59,13 +60,16 @@ for i in range(sim_point):
 
 	temp5 = comp_det.proc(temp4)	# signal after comparator
 	comp_buf.append(temp5)
-	
-	temp6 = pll1.edge(temp5)	# signal after eage finder
-	pll_edge_buf.append(temp6)
-	
-	temp7 = pll1.local_gen()
-	pll_local_gen_buf.append(temp7)
 
+#	temp6 = pll1.edge(temp5)	# signal after edge finder
+#	pll_edge_buf.append(temp6)
+
+#	temp7 = pll1.local_gen()
+#	pll_local_gen_buf.append(temp7)
+
+	temp8,temp9 = sem_pll.proc(temp5)
+	sem_pll_buf.append(temp8)
+	sem_pll_err_buf.append(temp9)
 #rms_sig = np.sqrt(np.mean(np.square(signal_buf)))
 #print ("RMS signal "+ str(rms_sig))
 
@@ -75,31 +79,29 @@ for i in range(sim_point):
 #rms_noise_filt = np.sqrt(np.mean(np.square(filter_buf)))
 #print ("RMS noise after channel filer "+ str(rms_noise_filt))
 
-#toc = time()
-#print(toc - tic)
-
 fig, axs = plt.subplots(3, 2, sharex = True)
 fig.subplots_adjust(hspace=0.1)
 
 axs[0,0].plot(t, signal_buf)
 axs[0,0].set_xlabel('Input signal')
 
-axs[1,0].plot(t, noise_buf)
-axs[1,0].set_xlabel('Noise')
+axs[1,0].plot(t, filter_buf)
+axs[1,0].set_xlabel('After channel filter output')
 
-axs[2,0].plot(t, filter_buf)
-axs[2,0].set_xlabel('After channel filter output')
+axs[2,0].plot(t, fsk_det_flt_buf)
+axs[2,0].set_xlabel('After fsk det and filter output')
 
-axs[0,1].plot(t, fsk_det_flt_buf)
-axs[0,1].set_xlabel('After fsk det and filter output')
+axs[0,1].plot(t, comp_buf)
+axs[0,1].set_ylim(-0.5, 2)
+axs[0,1].set_xlabel('Comp output')
 
-axs[1,1].plot(t, pll_edge_buf)
-axs[1,1].plot(t, comp_buf)
-axs[1,1].set_ylim(-1, 2)
-axs[1,1].set_xlabel('Edge output')
+axs[1,1].plot(t, sem_pll_buf)
+axs[1,1].set_ylim(-0.5, 2)
+axs[1,1].set_xlabel('Sync Pll sem output')
 
-axs[2,1].plot(t, pll_local_gen_buf)
-axs[2,1].set_xlabel('Pll Local gen output')
+axs[2,1].plot(t, sem_pll_err_buf)
+#axs[2,1].set_ylim(-0.5, 2)
+axs[2,1].set_xlabel('Error Pll sem output')
 
 plt.show()
 

@@ -9,15 +9,16 @@ class pll(object):
 		tick = 1.0/fs
 		self._buff_size = int(self.delay/tick)
 		self._data = [0]*self._buff_size
-		self.tick = 100
+		self.tick = 0
+		self.edge_val = 0
 
 	def edge(self, sample):
 		"""demodulation"""
 		self._data.insert(0,sample)
 		self._data.pop()
-		y = self._data[self._buff_size - 1] != sample
+		self.edge_val = self._data[self._buff_size - 1] != sample
 		#if y == 1: self.tick = 0
-		return y
+		return self.edge_val
 
 	def local_gen(self):
 		"""Local generator"""
@@ -38,3 +39,8 @@ class pll(object):
 			self.tick = 0
 			return 0
 
+	def phase_det(self, gen, sample):
+		""" Phase detector"""
+		
+		y = gen != sample
+		return y
