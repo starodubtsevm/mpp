@@ -1,18 +1,13 @@
 from const import *
 
+
+out_buf =[]
 #---------------------------------------
 class pll2(object):
 
 	def __init__(self, delay):
 		"""initialization"""
 
-		self.delay = delay * 1e-3
-		tick = 1.0/fs
-		self.tick = 0
-		self._buff_size = int(self.delay/tick)
-		self._data = [0]*self._buff_size
-		self.edge_val = 0
-		
 		self.syncCount = LEN_OF_BIT
 		self.phErrCount = 0
 		self.phErr = 0
@@ -20,12 +15,14 @@ class pll2(object):
 		self.receiveFlag = 1
 		self.edgeFlag = 0
 		self.frontDet = 0
+		self.sample = 0
 
 	def proc (self,sample):
 
 		"""find edge """
+		self.sample = sample
 		self.frontDet = self.frontDet << 1
-		self.frontDet |= sample
+		self.frontDet |= self.sample
 
 		"""find @ check syncro """
 		self.syncCount -= 1
@@ -34,8 +31,7 @@ class pll2(object):
 			if (self.phErrCount >= LEN_OF_BIT) or (self.frontDet & 0x0003 == 0x0001):
 				self.phErrCount = 0
 			self.syncro = 0
-			print ("first part  " + str(self.syncCount))
-			return self.syncro, self.phErrCount
+			return self.syncro,self.phErr
 
 		else:
 			self.phErr = self.phErrCount - LEN_OF_BIT/2
@@ -44,20 +40,20 @@ class pll2(object):
 				if(abs(self.phErr) >= LEN_OF_BIT * 3 * 50):
 					if(self.receiveFlag == 1):
 						if(self.phErr < 0): 
-							self.sincCount = LEN_OF_BIT+2
+							self.syncCount = LEN_OF_BIT+2
 						else:
 							self.syncCount = LEN_OF_BIT-2
 					else:
 						self.syncCount = LEN_OF_BIT-5-self.phErr*1/8
 				else: 
 					if (self.phErr < 0): 
-						self.sincCount = LEN_OF_BIT +2
+						self.syncCount = LEN_OF_BIT +2
 					else:
 						self.syncCount = LEN_OF_BIT-2
 			else:
 				self.syncCount = LEN_OF_BIT
 			self.syncro = 1
-			print ("second part")
-			return self.syncro,self.phErrCount
+			out_buf.append(self.sample)
+			return self.syncro,self.phErr
 
 

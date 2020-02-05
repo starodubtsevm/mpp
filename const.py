@@ -11,3 +11,5 @@ fsignal = 1475	 # Generator freq in Hz
 LEN_OF_BIT = int(fs/fmod)
 sim_point = int(t_sim/(1.0/fs)) 
 t = np.linspace(0, t_sim, sim_point) 
+
+

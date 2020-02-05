@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math as m
-from time import time
 from fir_filter import *
 from fsk_gen2 import *
 from fsk_delay_det import *
@@ -9,13 +8,14 @@ from comparator import *
 from limiter import *
 from pll2 import *
 from white_noise_gen import *
-from const import *
-
+from code import*
+#from logic import *
 #--------------------------------------
 # main
 #--------------------------------------
-noise1 = white_noise(360)
-fsk1 = fsk_gen(525,360,0x2c)	# source fsk signal
+
+noise1 = white_noise(860)
+fsk1 = fsk_gen(525,560,0x2c)	# source fsk signal
 limiter_in = limiter (-2000,2000)	# input limiter
 chan_fir = fir(h_bpf_525)	#.channel filter
 det = fsk_det(33)		# fsk detector @ 525Hz
@@ -30,9 +30,6 @@ limiter_buf       =  []
 fsk_det_buf       =  []
 fsk_det_flt_buf   =  []
 comp_buf          =  []
-pll_edge_buf      =  []
-pll_local_gen_buf =  []
-pll_phase_det_buf =  []
 sem_pll_buf       =  []
 sem_pll_err_buf   =  []
 
@@ -61,23 +58,30 @@ for i in range(sim_point):
 	temp5 = comp_det.proc(temp4)	# signal after comparator
 	comp_buf.append(temp5)
 
-#	temp6 = pll1.edge(temp5)	# signal after edge finder
-#	pll_edge_buf.append(temp6)
-
-#	temp7 = pll1.local_gen()
-#	pll_local_gen_buf.append(temp7)
-
-	temp8,temp9 = sem_pll.proc(temp5)
-	sem_pll_buf.append(temp8)
+	temp11,temp9 = sem_pll.proc(temp5)
+	sem_pll_buf.append(temp11)
 	sem_pll_err_buf.append(temp9)
-#rms_sig = np.sqrt(np.mean(np.square(signal_buf)))
-#print ("RMS signal "+ str(rms_sig))
 
-#rms_noise = np.sqrt(np.mean(np.square(noise_buf)))
-#print ("RMS noise "+ str(rms_noise))
 
-#rms_noise_filt = np.sqrt(np.mean(np.square(filter_buf)))
-#print ("RMS noise after channel filer "+ str(rms_noise_filt))
+#print (out_buf)
+
+string = [0] * 8
+count = 0
+count_free = 0
+for i in range (len(out_buf)):
+
+	string.insert(8, out_buf[i])
+	string.pop(0)
+	if string in array2C:
+		print ("Got it! ")
+		count_free +=1
+		if count_free == 3: 
+			print ("free!")
+			count_free =0
+	else:
+		print ("not ok")
+	count +=1
+	
 
 fig, axs = plt.subplots(3, 2, sharex = True)
 fig.subplots_adjust(hspace=0.1)
@@ -104,4 +108,5 @@ axs[2,1].plot(t, sem_pll_err_buf)
 axs[2,1].set_xlabel('Error Pll sem output')
 
 plt.show()
+
 
