@@ -12,8 +12,10 @@ from code import*
 # main
 #--------------------------------------
 
-noise1 = white_noise(560)
-fsk1 = fsk_gen(525,235,0x2c)	# source fsk signal
+noise1 = white_noise(0)
+fsk1 = fsk_gen(525,235*1,0x2c)	# source fsk signal
+fsk2 = fsk_gen(475,235*6,0x3c)	# interference fsk signal
+fsk3 = fsk_gen(575,235*6,0x3c)	# interference fsk signal
 limiter_in = limiter (-100,100)	# input limiter
 chan_fir = fir(h_bpf_525)	#.channel filter
 det = fsk_det(19.55)		# fsk detector 
@@ -23,6 +25,7 @@ sem_pll = pll2(1)
 
 noise_buf         =  []
 signal_buf        =  []
+signal2_buf       =  []
 filter_buf        =  []
 limiter_buf       =  []
 fsk_det_buf       =  []
@@ -33,13 +36,16 @@ sem_pll_err_buf   =  []
 
 for i in range(sim_point):
 
+	temp0000 = fsk3.proc_signal(i)
+	temp000 = fsk2.proc_signal(i)
+	
 	temp00 = noise1.proc(i)		# noise
 	noise_buf.append(temp00)
 
 	temp0 = fsk1.proc_signal(i)	# fsk signal
 	signal_buf.append(temp0)
 
-	temp0 = temp0 +temp00		# signal + noise
+	temp0 = temp0 + temp00 + temp000 + temp0000		# signal + noise
 
 	temp1 = chan_fir.proc(temp0)	# filtered signal
 	filter_buf.append(temp1)
@@ -76,7 +82,7 @@ for i in range (len(out_buf)):
 	string.insert(8, out_buf[i])
 	string.pop(0)
 	if string in array2C:
-		print ("Got it! ")
+		print ("gotcha! ")
 		count_free += 1
 		if count_free == 3: 
 			print ("free!")
@@ -96,7 +102,7 @@ axs[0,0].plot(t, signal_buf)
 axs[0,0].set_xlabel('Input signal')
 
 axs[1,0].plot(t, filter_buf)
-axs[1,0].plot(t, limiter_buf)
+#axs[1,0].plot(t, limiter_buf)
 axs[1,0].set_xlabel('After channel filter output')
 
 axs[2,0].plot(t, fsk_det_flt_buf)
