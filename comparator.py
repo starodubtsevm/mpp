@@ -12,18 +12,21 @@ class comparator(object):
 		self.delay = (delay * 1e-2)/tick
 		self.delay_count = 0
 
+
 	def proc(self, sample):
 		"""comparing"""
 		if self.delay_count > 0:
 			self.delay_count -= 1
 			return self.prev
 		else:
-			if sample >= self.thres_max :
+			if sample >= self.thres_max:
 				self.prev = 1
 				self.delay_count = self.delay
 				return 1
 
-			if sample <= self.thres_min:
+			else:
+			    #if sample <= self.thres_min:
 				self.prev = 0
 				self.delay_count = self.delay
 				return 0
+

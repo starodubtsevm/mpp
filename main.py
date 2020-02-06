@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import math as m
 from fir_filter import *
 from fsk_gen2 import *
 from fsk_delay_det import *
@@ -9,18 +8,17 @@ from limiter import *
 from pll2 import *
 from white_noise_gen import *
 from code import*
-#from logic import *
 #--------------------------------------
 # main
 #--------------------------------------
 
-noise1 = white_noise(0)
-fsk1 = fsk_gen(525,560,0x2c)	# source fsk signal
-limiter_in = limiter (-2000,2000)	# input limiter
+noise1 = white_noise(560)
+fsk1 = fsk_gen(525,235,0x2c)	# source fsk signal
+limiter_in = limiter (-100,100)	# input limiter
 chan_fir = fir(h_bpf_525)	#.channel filter
-det = fsk_det(33)		# fsk detector @ 525Hz
+det = fsk_det(19.55)		# fsk detector 
 det_fir = fir(h_lpf_20)		#.fsk detector filter
-comp_det = comparator(350,-350, 1)	# comparator after fsk detector filter
+comp_det = comparator(-100,100, 4)	# comparator after fsk detector filter
 sem_pll = pll2(1)
 
 noise_buf         =  []
@@ -62,6 +60,11 @@ for i in range(sim_point):
 	sem_pll_buf.append(temp11)
 	sem_pll_err_buf.append(temp9)
 
+rms_sig = np.sqrt(np.mean(np.square(signal_buf)))
+print ("RMS signal "+ str(rms_sig))
+
+rms_noise_filt = np.sqrt(np.mean(np.square(filter_buf)))
+print ("RMS noise after channel filer "+ str(rms_noise_filt))
 
 #print (out_buf)
 
@@ -93,9 +96,11 @@ axs[0,0].plot(t, signal_buf)
 axs[0,0].set_xlabel('Input signal')
 
 axs[1,0].plot(t, filter_buf)
+axs[1,0].plot(t, limiter_buf)
 axs[1,0].set_xlabel('After channel filter output')
 
 axs[2,0].plot(t, fsk_det_flt_buf)
+#axs[2,0].plot(t, fsk_det_buf)
 axs[2,0].set_xlabel('After fsk det and filter output')
 
 axs[0,1].plot(t, comp_buf)

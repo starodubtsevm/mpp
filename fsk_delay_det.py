@@ -8,6 +8,7 @@ class fsk_det(object):
 		self.delay = delay * 1e-3
 		tick = 1.0/fs
 		self._buff_size = int(self.delay/tick)
+		print (self._buff_size)
 		self._data = [0]*self._buff_size
 		self._index = 0
 
