@@ -14,7 +14,7 @@ from code import*
 # main
 #--------------------------------------
 
-noise1 = white_noise(860)
+noise1 = white_noise(0)
 fsk1 = fsk_gen(525,560,0x2c)	# source fsk signal
 limiter_in = limiter (-2000,2000)	# input limiter
 chan_fir = fir(h_bpf_525)	#.channel filter
@@ -74,12 +74,15 @@ for i in range (len(out_buf)):
 	string.pop(0)
 	if string in array2C:
 		print ("Got it! ")
-		count_free +=1
+		count_free += 1
 		if count_free == 3: 
 			print ("free!")
-			count_free =0
+			count_free = 0
 	else:
 		print ("not ok")
+		count_free = 0
+		
+		
 	count +=1
 	
 
