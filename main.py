@@ -14,13 +14,14 @@ from code import*
 
 noise1 = white_noise(0)
 fsk1 = fsk_gen(525,235*1,0x2c)	# source fsk signal
-fsk2 = fsk_gen(475,235*6,0x3c)	# interference fsk signal
-fsk3 = fsk_gen(575,235*6,0x3c)	# interference fsk signal
-limiter_in = limiter (-100,100)	# input limiter
+fsk2 = fsk_gen(475,235*2,0x3c)	# interference fsk signal 1
+fsk3 = fsk_gen(575,235*2,0x3c)	# interference fsk signal 2
+limiter_in = limiter (-200,200)	# input limiter
 chan_fir = fir(h_bpf_525)	#.channel filter
+aux_fir = fir(h_bpf_525)	#.aux channel filter
 det = fsk_det(19.55)		# fsk detector 
 det_fir = fir(h_lpf_20)		#.fsk detector filter
-comp_det = comparator(-100,100, 4)	# comparator after fsk detector filter
+comp_det = comparator(-50,50, 4)# comparator after fsk detector filter
 sem_pll = pll2(1)
 
 noise_buf         =  []
@@ -45,13 +46,15 @@ for i in range(sim_point):
 	temp0 = fsk1.proc_signal(i)	# fsk signal
 	signal_buf.append(temp0)
 
-	temp0 = temp0 + temp00 + temp000 + temp0000		# signal + noise
+	temp0 = temp0 + temp00 + temp000 + temp0000	# signal + noise
 
 	temp1 = chan_fir.proc(temp0)	# filtered signal
 	filter_buf.append(temp1)
 
 	temp2 = limiter_in.proc(temp1)	# signal after limiter
 	limiter_buf.append(temp2)
+
+	temp20 = aux_fir.proc(temp2)
 
 	temp3 = det.proc(temp2)		# signal after fsk det
 	fsk_det_buf.append(temp3)
@@ -72,7 +75,6 @@ print ("RMS signal "+ str(rms_sig))
 rms_noise_filt = np.sqrt(np.mean(np.square(filter_buf)))
 print ("RMS noise after channel filer "+ str(rms_noise_filt))
 
-#print (out_buf)
 
 string = [0] * 8
 count = 0
