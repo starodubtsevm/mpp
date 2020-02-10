@@ -31,7 +31,7 @@ class pll2(object):
 			if (self.phErrCount >= LEN_OF_BIT) or (self.frontDet & 0x0003 == 0x0001):
 				self.phErrCount = 0
 			self.syncro = 0
-			return self.syncro,self.phErr
+			return self.syncro,self.phErr,self.sample
 
 		else:
 			self.phErr = self.phErrCount - LEN_OF_BIT/2
@@ -53,7 +53,6 @@ class pll2(object):
 			else:
 				self.syncCount = LEN_OF_BIT
 			self.syncro = 1
-			out_buf.append(self.sample)
-			return self.syncro,self.phErr
-
+			#out_buf.append(self.sample)
+			return self.syncro,self.phErr,self.sample
 

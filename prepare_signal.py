@@ -19,7 +19,7 @@ chan_fir = fir(h_bpf_525)	#.channel filter
 det = fsk_det(19.55)		# fsk detector #19.55@525
 det_iir = IIR2Filter(4, [10], 'low',design='cheby1',rs = 2, fs=fs)
 comp_det = comparator(-0.1,0.1, 1)# comparator after fsk detector filter
-sem_pll = pll2()
+sem_pll = pll2(1)
 decoder1 = decode()
 
 noise_buf         =  []
