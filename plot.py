@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from const import *
 
-def plot (signal_buf,filter_buf,fsk_det_flt_buf,comp_buf,sem_pll_buf,sem_pll_err_buf):
+def plot (signal_buf,filter_buf,lev_met_buf,comp_buf,sem_pll_buf,sem_pll_err_buf):
 
 	fig, axs = plt.subplots(3, 2)
 	fig.subplots_adjust(hspace=0.1)
@@ -14,9 +14,9 @@ def plot (signal_buf,filter_buf,fsk_det_flt_buf,comp_buf,sem_pll_buf,sem_pll_err
 	#axs[1,0].plot(t, limiter_buf)
 	axs[1,0].set_xlabel('After channel filter output')
 
-	axs[2,0].plot(t, fsk_det_flt_buf)
+	axs[2,0].plot(t, lev_met_buf)
 	#axs[2,0].plot(t, fsk_det_buf)
-	axs[2,0].set_xlabel('After fsk det and filter output')
+	axs[2,0].set_xlabel('Измеритель амплитудного канала')
 
 	axs[0,1].plot(t, comp_buf)
 	axs[0,1].set_ylim(-0.5, 2)

@@ -9,23 +9,27 @@ from white_noise_gen import *
 from code import*
 from IIR2Filter import *
 from decode import *
+from level_meter import*
 
 noise1 = white_noise(0)
-fsk1 = fsk_gen(525,235*1,0x2c)	# source fsk signal
-fsk2 = fsk_gen(475,235*5,0x3c)	# interference fsk signal 1
-fsk3 = fsk_gen(575,235*5,0x3c)	# interference fsk signal 2
-limiter_in = limiter (-2,2)	# input limiter
-chan_fir = fir(h_bpf_525)	#.channel filter
-det = fsk_det(19.55)		# fsk detector #19.55@525
+fsk1 = fsk_gen(525,235*1,0x2c)    # source fsk signal
+fsk2 = fsk_gen(475,235*5,0x3c)    # interference fsk signal 1
+fsk3 = fsk_gen(575,235*1,0x3c)    # interference fsk signal 2
+limiter_in = limiter (-2,2)    # input limiter
+chan_fir = fir(h_bpf_525)    #.channel filter
+det = fsk_det(19.55)        # fsk detector #19.55@525
 det_iir = IIR2Filter(4, [10], 'low',design='cheby1',rs = 2, fs=fs)
+
 comp_det = comparator(-0.1,0.1, 1)# comparator after fsk detector filter
 sem_pll = pll2(1)
 decoder1 = decode()
+lev_met = level_meter()
 
 noise_buf         =  []
 signal_buf        =  []
 signal2_buf       =  []
 filter_buf        =  []
+lev_met_buf       =  []
 limiter_buf       =  []
 fsk_det_buf       =  []
 fsk_det_flt_buf   =  []
@@ -34,18 +38,18 @@ sem_pll_buf       =  []
 sem_pll_err_buf   =  []
 input_signal_buf  =  []
 
-
 for i in range(sim_point):
 #--Preparing input signal + noise------------------------------------
-	fsk_signal = fsk1.proc_signal(i)
-	signal_buf.append(fsk_signal)
-	
-	fsk_int_1  = fsk2.proc_signal(i)
-	
-	fsk_int_2  = fsk3.proc_signal(i)
-	
-	noise = noise1.proc(i)		# noise
-	noise_buf.append(noise)
+    fsk_signal = fsk1.proc_signal(i)
+    signal_buf.append(fsk_signal)
+    
+    fsk_int_1  = fsk2.proc_signal(i)
+    
+    fsk_int_2  = fsk3.proc_signal(i)
+    
+    noise = noise1.proc(i)        # noise
+    noise_buf.append(noise)
 
-	input_signal = 1*fsk_signal + 1*fsk_int_1 + 1*fsk_int_2 + 1*noise
-	input_signal_buf.append(input_signal)
+    input_signal = 1*fsk_signal + 1*fsk_int_1 + 1*fsk_int_2 + 1*noise
+    input_signal_buf.append(input_signal)
+
